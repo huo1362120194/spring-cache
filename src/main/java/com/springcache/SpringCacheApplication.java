@@ -3,6 +3,7 @@ package com.springcache;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Cache	       缓存接口，定义缓存操作。实现有：RedisCache、EhCacheCache、ConcurrentMapCache等
@@ -16,7 +17,8 @@ import org.springframework.cache.annotation.EnableCaching;
  * @CacheConfig    统一配置本类的缓存注解的属性
  */
 @SpringBootApplication
-@EnableCaching//统一配置本类的缓存注解的属性
+@EnableCaching //统一配置本类的缓存注解的属性
+@EnableAsync //开启异步
 public class SpringCacheApplication {
 
     public static void main(String[] args) {

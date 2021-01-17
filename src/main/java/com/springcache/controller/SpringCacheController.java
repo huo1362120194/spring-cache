@@ -1,6 +1,7 @@
 package com.springcache.controller;
 
 import com.springcache.entity.User;
+import com.springcache.entity.UserEvent;
 import com.springcache.redis.util.RedisUtil;
 import com.springcache.service.UserService;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +38,9 @@ public class SpringCacheController {
     @Resource
     private CacheManager cacheManager;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @GetMapping("/create")
     public Map saveUser(@RequestParam String name, @RequestParam Integer age){
         Map map = new HashMap();
@@ -44,10 +49,16 @@ public class SpringCacheController {
         return map;
     }
 
-    @Cacheable(value = "user",key = "#id")
+    //@Cacheable(value = "user",key = "#id")
     @GetMapping("/{id}")
     public User findUserById(@PathVariable Integer id){
-        User user = userService.findUserById(id);
+        //User user = userService.findUserById(id);
+        User user = new User("xiaoxiao",18);
+        applicationContext.publishEvent(user);
+        logger.info("11111111111111111111111");
+        UserEvent userEvent = new UserEvent(user);
+        applicationContext.publishEvent(userEvent);
+        logger.info("22222222222222222222222");
         return user;
     }
 
