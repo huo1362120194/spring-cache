@@ -3,6 +3,10 @@ package com.springcache.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +17,17 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.*;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.time.Duration;
 
 @Configuration
-public class LettuceRedisConfig {
+public class RedisConfig {
 
-    @Bean
+    @Resource
+    private RedisProperties redisProperties;
+
+    //@Bean
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory connectionFactory) {
         RedisTemplate<String, Serializable> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -49,5 +57,14 @@ public class LettuceRedisConfig {
 
         RedisCacheManager cacheManager = RedisCacheManager.builder(factory).cacheDefaults(config).build();
         return cacheManager;
+    }
+
+    @Bean
+    public RedissonClient redissonClient(){
+        Config config = new Config();
+        String redisUrl = String.format("redis://%s:%s", redisProperties.getHost() + "", redisProperties.getPort() + "");
+        config.useSingleServer().setAddress(redisUrl).setPassword(redisProperties.getPassword());
+        config.useSingleServer().setDatabase(3);
+        return Redisson.create(config);
     }
 }

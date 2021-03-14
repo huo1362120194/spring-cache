@@ -1,6 +1,7 @@
 package com.springcache.redis.util;
 
 import com.google.common.collect.Iterables;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -17,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
@@ -63,5 +65,18 @@ public class RedisUtil {
             }
             return null;
         });
+    }
+
+    public Object getKey(String key){
+        if(StringUtils.isBlank(key)){
+            return null;
+        }
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    public void setKey(String key,Object value,Long time){
+        if(StringUtils.isNoneBlank(key)){
+            redisTemplate.opsForValue().set(key,value,time, TimeUnit.SECONDS);
+        }
     }
 }
